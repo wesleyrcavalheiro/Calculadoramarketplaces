@@ -131,11 +131,16 @@ function calcular() {
     return;
   }
 
-  const taxaShopee = freteGratis === 'sim' ? 0.20 : 0.14;
-  const comissao = valorVenda * taxaShopee;
+  const taxaShopeePercentual = freteGratis === 'sim' ? 0.20 : 0.14;
+  let comissaoPercentual = valorVenda * taxaShopeePercentual;
   const taxaExtra = valorVenda >= 8 ? 4 : valorVenda * 0.5;
   const imposto = valorVenda * (impostoPercentual / 100);
-  const totalComissao = comissao + taxaExtra;
+
+  if (comissaoPercentual > 100) {
+    comissaoPercentual = 100;
+  }
+
+  const totalComissao = comissaoPercentual + taxaExtra;
   const valorLiquido = valorVenda - totalComissao - imposto;
   const lucro = valorLiquido - custoProduto;
 
@@ -151,7 +156,7 @@ function calcular() {
   else classificacao = '<span class="bolinha preta"></span>Margem Extremamente Ruim, Máximo de atenção';
 
   document.getElementById('resultado').innerHTML = `
-    <strong>Comissão Shopee:</strong> R$ ${totalComissao.toFixed(2)} <span title="Inclui a comissão percentual da Shopee (14% ou 20%) + taxa fixa de R$ 4,00 (ou 50% para produtos abaixo de R$ 8,00)">ⓘ</span><br>
+    <strong>Comissão Shopee:</strong> R$ ${totalComissao.toFixed(2)} <span title="Inclui a comissão percentual da Shopee (14% ou 20%) com limite de R$100,00 + taxa fixa de R$ 4,00 (ou 50% para produtos abaixo de R$ 8,00)">ⓘ</span><br>
     <strong>Imposto:</strong> R$ ${imposto.toFixed(2)}<br>
     <strong>Valor Líquido:</strong> R$ ${valorLiquido.toFixed(2)} <span title="Valor que a Shopee te pagará após descontar comissões, taxa adicional e imposto.">ⓘ</span><br>
     <strong>Lucro:</strong> R$ ${lucro.toFixed(2)} <span title="Lucro = Valor líquido recebido - Custo do produto">ⓘ</span><br>
