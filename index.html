@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Shopee</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background: #f9f9f9;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    label, select, input {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background: #f60;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .resultado {
+      margin-top: 20px;
+      padding: 10px;
+      background: #eef;
+      border-radius: 5px;
+    }
+    a.whatsapp {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      text-decoration: none;
+      color: #25D366;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Calculadora Shopee</h2>
+
+  <label for="valorVenda">Valor de Venda (R$)</label>
+  <input type="number" id="valorVenda" step="0.01">
+
+  <label for="freteGratis">Participa do Programa de Frete Grátis?</label>
+  <select id="freteGratis">
+    <option value="sim">Sim</option>
+    <option value="nao">Não</option>
+  </select>
+
+  <label for="custoProduto">Custo do Produto (R$)</label>
+  <input type="number" id="custoProduto" step="0.01">
+
+  <button onclick="calcular()">Calcular</button>
+
+  <div class="resultado" id="resultado"></div>
+
+  <a class="whatsapp" href="https://wa.me/SEUNUMEROAQUI" target="_blank">📲 Fale comigo no WhatsApp</a>
+</div>
+
+<script>
+function calcular() {
+  const valorVenda = parseFloat(document.getElementById('valorVenda').value);
+  const freteGratis = document.getElementById('freteGratis').value;
+  const custoProduto = parseFloat(document.getElementById('custoProduto').value);
+
+  if (isNaN(valorVenda) || isNaN(custoProduto)) {
+    document.getElementById('resultado').innerHTML = 'Preencha todos os campos corretamente.';
+    return;
+  }
+
+  const taxaShopee = freteGratis === 'sim' ? 0.20 : 0.14;
+  const comissao = valorVenda * taxaShopee;
+  const taxaExtra = valorVenda >= 8 ? 4 : valorVenda * 0.5;
+  const valorLiquido = valorVenda - comissao - taxaExtra;
+  const lucro = valorLiquido - custoProduto;
+  const margemLucroCusto = ((lucro / custoProduto) * 100).toFixed(2);
+  const margemLucroVenda = ((lucro / valorVenda) * 100).toFixed(2);
+
+  document.getElementById('resultado').innerHTML = `
+    <strong>Comissão Shopee:</strong> R$ ${comissao.toFixed(2)}<br>
+    <strong>Taxa Adicional:</strong> R$ ${taxaExtra.toFixed(2)}<br>
+    <strong>Valor Líquido:</strong> R$ ${valorLiquido.toFixed(2)}<br>
+    <strong>Lucro:</strong> R$ ${lucro.toFixed(2)}<br>
+    <strong>Margem Lucro sobre Custo:</strong> ${margemLucroCusto}%<br>
+    <strong>Margem Lucro sobre Venda:</strong> ${margemLucroVenda}%
+  `;
+}
+</script>
+
+</body>
+</html>
