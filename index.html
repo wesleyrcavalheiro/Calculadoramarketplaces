@@ -20,6 +20,11 @@
     .explicacao-mensal { margin-top: 15px; font-size: 14px; color: #444; background: #fffbe6; padding: 10px; border-radius: 5px; }
     .linha-produto { display: flex; gap: 10px; margin-bottom: 10px; }
     .linha-produto input { flex: 1; }
+    .highlight-verde { background: #a8f0a5; padding: 2px 5px; border-radius: 3px; }
+    .highlight-amarela { background: #fff9a0; padding: 2px 5px; border-radius: 3px; }
+    .highlight-laranja { background: #ffd39e; padding: 2px 5px; border-radius: 3px; }
+    .highlight-vermelha { background: #fca3a3; padding: 2px 5px; border-radius: 3px; }
+    .highlight-preta { background: #ccc; color: black; padding: 2px 5px; border-radius: 3px; }
     .banner-superior, .banner-final { text-align: center; margin: 20px auto; }
     .banner-superior img, .banner-final img { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
   </style>
@@ -104,11 +109,11 @@
       const margemLucroVenda = ((lucro / valorVenda) * 100).toFixed(2);
       let classificacao = '';
       const margem = parseFloat(margemLucroVenda);
-      if (margem >= 30) classificacao = 'Excelente, Margem de Lucro adequada';
-      else if (margem >= 20) classificacao = 'Boa, Margem de Lucro aceitável';
-      else if (margem >= 12) classificacao = 'Média, margem abaixo do normal, exige bom controle';
-      else if (margem >= 7) classificacao = 'Margem Ruim, só válido com alto volume';
-      else classificacao = 'Margem Extremamente Ruim, Máximo de atenção';
+      if (margem >= 30) classificacao = '<span class="highlight-verde">Excelente, Margem de Lucro adequada</span>';
+      else if (margem >= 20) classificacao = '<span class="highlight-amarela">Boa, Margem de Lucro aceitável</span>';
+      else if (margem >= 12) classificacao = '<span class="highlight-laranja">Média, margem abaixo do normal, exige bom controle</span>';
+      else if (margem >= 7) classificacao = '<span class="highlight-vermelha">Margem Ruim, só válido com alto volume</span>';
+      else classificacao = '<span class="highlight-preta">Margem Extremamente Ruim, Máximo de atenção</span>';
       document.getElementById('resultadoLucro').innerHTML = `
         <strong>Comissão Shopee:</strong> R$ ${totalComissao.toFixed(2)}<br>
         <strong>Imposto:</strong> R$ ${imposto.toFixed(2)}<br>
@@ -116,7 +121,7 @@
         <strong>Lucro:</strong> R$ ${lucro.toFixed(2)}<br>
         <strong>Margem Lucro sobre Custo:</strong> ${margemLucroCusto}%<br>
         <strong>Margem Lucro sobre Venda:</strong> ${margemLucroVenda}%<br>
-        <em>${classificacao}</em>
+        ${classificacao}
       `;
     }
   </script>
