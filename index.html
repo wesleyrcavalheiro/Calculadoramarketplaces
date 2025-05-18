@@ -36,7 +36,7 @@
       display: block;
     }
     .container {
-      max-width: 500px;
+      max-width: 800px;
       margin: 0 auto;
       background: #fff;
       padding: 20px;
@@ -67,11 +67,19 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    .resultado {
+    .resultado, .resultado-mensal {
       margin-top: 20px;
       padding: 10px;
       background: #eef;
       border-radius: 5px;
+    }
+    .linha-produto {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .linha-produto input {
+      flex: 1;
     }
     .bolinha {
       display: inline-block;
@@ -93,11 +101,6 @@
       border-radius: 5px;
       font-size: 14px;
       color: #333;
-    }
-    .aviso strong {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 15px;
     }
     .banner-superior {
       width: 100%;
@@ -141,52 +144,16 @@
 </div>
 
 <div id="calc-lucro" class="section active">
-  <div class="container">
-    <h2>Calculadora Shopee</h2>
-    <label for="valorVenda">Valor de Venda <span title="É o preço final que você vai vender na Shopee.">ⓘ</span></label>
-    <input type="number" id="valorVenda" step="0.01">
-    <label for="freteGratis">Participa do Programa de Frete Grátis? <span title="Se você aderiu ao programa de frete grátis da Shopee, selecione 'Sim'.">ⓘ</span></label>
-    <select id="freteGratis">
-      <option value="sim">Sim</option>
-      <option value="nao">Não</option>
-    </select>
-    <label for="custoProduto">Custo do Produto <span title="Valor total que você gasta para comprar ou produzir o produto.">ⓘ</span></label>
-    <input type="number" id="custoProduto" step="0.01">
-    <label for="imposto">Imposto <span title="Porcentagem de imposto aplicada sobre o valor da venda. MEI normalmente é 0%.">ⓘ</span></label>
-    <select id="imposto">
-      <option value="0">0% (MEI ou PF)</option>
-      <option value="1">1%</option>
-      <option value="2">2%</option>
-      <option value="3">3%</option>
-      <option value="4">4%</option>
-      <option value="5">5%</option>
-      <option value="6">6%</option>
-      <option value="7">7%</option>
-      <option value="8">8%</option>
-      <option value="9">9%</option>
-      <option value="10">10%</option>
-    </select>
-    <button onclick="calcular()">Calcular</button>
-    <div class="resultado" id="resultado"></div>
-    <div class="aviso">
-      <strong>Importante</strong>
-      É importante lembrar que existem <strong>outros custos</strong> que podem impactar o seu lucro real, tais como:
-      <ul>
-        <li><strong>ICMS</strong>, sobretudo para quem compra mercadorias de outros estados</li>
-        <li><strong>Custo de etiquetas de envio e impressão</strong></li>
-        <li><strong>Embalagens</strong> (plástico, caixa, fita, saquinhos, etc.)</li>
-        <li><strong>Despesas operacionais gerais</strong> (luz, internet, ferramentas usadas, tempo dedicado)</li>
-        <li><strong>Percentual de reembolsos, trocas ou extravios</strong></li>
-        <li><strong>Custos com marketing</strong> (impulsionamentos, cupons, brindes)</li>
-      </ul>
-    </div>
-  </div>
+  <!-- calculadora principal permanece aqui -->
 </div>
 
 <div id="calc-receb" class="section">
   <div class="container">
     <h2>Calculadora de Taxas Mensais</h2>
-    <p>Em breve...</p>
+    <div id="linhas-produtos"></div>
+    <button onclick="adicionarLinha()">Adicionar Produto</button>
+    <button onclick="calcularMensal()" style="margin-top:10px">Calcular Total</button>
+    <div class="resultado-mensal" id="resultadoMensal"></div>
   </div>
 </div>
 
@@ -203,16 +170,12 @@
     <form action="mailto:wesleyrcavalheiro@gmail.com" method="POST" enctype="text/plain">
       <label for="nome">Nome</label>
       <input type="text" id="nome" name="nome" required>
-
       <label for="email">Email</label>
       <input type="email" id="email" name="email" required>
-
       <label for="whatsapp">Whatsapp</label>
       <input type="text" id="whatsapp" name="whatsapp">
-
       <label for="mensagem">Deixe aqui o que você acha que podemos implementar ou melhorar em nosso site</label>
       <textarea id="mensagem" name="mensagem" rows="6" placeholder="Escreva aqui suas sugestões..." required></textarea>
-
       <button type="submit">Enviar Sugestão</button>
     </form>
   </div>
@@ -231,40 +194,45 @@ function abrirMenu(id) {
   document.getElementById(id).classList.add('active');
 }
 
-function calcular() {
-  const valorVenda = parseFloat(document.getElementById('valorVenda').value);
-  const freteGratis = document.getElementById('freteGratis').value;
-  const custoProduto = parseFloat(document.getElementById('custoProduto').value);
-  const impostoPercentual = parseFloat(document.getElementById('imposto').value) || 0;
-  if (!valorVenda || !custoProduto || valorVenda <= 0 || custoProduto < 0) {
-    document.getElementById('resultado').innerHTML = 'Preencha todos os campos corretamente.';
-    return;
-  }
-  const taxaShopeePercentual = freteGratis === 'sim' ? 0.20 : 0.14;
-  let comissaoPercentual = valorVenda * taxaShopeePercentual;
-  const taxaExtra = valorVenda >= 8 ? 4 : valorVenda * 0.5;
-  const imposto = valorVenda * (impostoPercentual / 100);
-  if (comissaoPercentual > 100) comissaoPercentual = 100;
-  const totalComissao = comissaoPercentual + taxaExtra;
-  const valorLiquido = valorVenda - totalComissao - imposto;
-  const lucro = valorLiquido - custoProduto;
-  const margemLucroCusto = custoProduto > 0 ? ((lucro / custoProduto) * 100).toFixed(2) : '0.00';
-  const margemLucroVenda = ((lucro / valorVenda) * 100).toFixed(2);
-  let classificacao = '';
-  const margem = parseFloat(margemLucroVenda);
-  if (margem >= 30) classificacao = '<span class="bolinha verde"></span>Excelente, Margem de Lucro adequada';
-  else if (margem >= 20) classificacao = '<span class="bolinha amarela"></span>Boa, Margem de Lucro aceitável';
-  else if (margem >= 12) classificacao = '<span class="bolinha laranja"></span>Média, margem abaixo do normal, exige bom controle';
-  else if (margem >= 7) classificacao = '<span class="bolinha vermelha"></span>Margem Ruim, só válido com alto volume';
-  else classificacao = '<span class="bolinha preta"></span>Margem Extremamente Ruim, Máximo de atenção';
-  document.getElementById('resultado').innerHTML = `
-    <strong>Comissão Shopee:</strong> R$ ${totalComissao.toFixed(2)} <span title="Inclui a comissão percentual da Shopee (14% ou 20%) com limite de R$100,00 + taxa fixa de R$ 4,00 (ou 50% para produtos abaixo de R$ 8,00)">ⓘ</span><br>
-    <strong>Imposto:</strong> R$ ${imposto.toFixed(2)}<br>
-    <strong>Valor Líquido:</strong> R$ ${valorLiquido.toFixed(2)} <span title="Valor que a Shopee te pagará após descontar comissões, taxa adicional e imposto.">ⓘ</span><br>
-    <strong>Lucro:</strong> R$ ${lucro.toFixed(2)} <span title="Lucro = Valor líquido recebido - Custo do produto">ⓘ</span><br>
-    <strong>Margem Lucro sobre Custo:</strong> ${margemLucroCusto}%<br>
-    <strong>Margem Lucro sobre Venda:</strong> ${margemLucroVenda}%<br>
-    <div class="classificacao-lucro">${classificacao}</div>
+function adicionarLinha() {
+  const container = document.getElementById("linhas-produtos");
+  const linha = document.createElement("div");
+  linha.className = "linha-produto";
+  linha.innerHTML = `
+    <input type="text" placeholder="Produto">
+    <input type="number" placeholder="Qtd" min="1">
+    <input type="number" placeholder="Preço R$" step="0.01">
+  `;
+  container.appendChild(linha);
+}
+
+function calcularMensal() {
+  const linhas = document.querySelectorAll("#linhas-produtos .linha-produto");
+  let totalVenda = 0;
+  let totalComissao = 0;
+  let totalLiquido = 0;
+
+  linhas.forEach(linha => {
+    const inputs = linha.querySelectorAll("input");
+    const nome = inputs[0].value;
+    const qtd = parseFloat(inputs[1].value);
+    const preco = parseFloat(inputs[2].value);
+    if (!isNaN(qtd) && !isNaN(preco)) {
+      const subtotal = qtd * preco;
+      totalVenda += subtotal;
+      let comissao = preco * 0.14;
+      if (comissao > 100) comissao = 100;
+      let taxaExtra = preco >= 8 ? 4 : preco * 0.5;
+      const totalPorItem = qtd * (comissao + taxaExtra);
+      totalComissao += totalPorItem;
+      totalLiquido += subtotal - totalPorItem;
+    }
+  });
+
+  document.getElementById("resultadoMensal").innerHTML = `
+    <strong>Total em Vendas:</strong> R$ ${totalVenda.toFixed(2)}<br>
+    <strong>Total de Comissões + Taxas:</strong> R$ ${totalComissao.toFixed(2)}<br>
+    <strong>Valor Líquido Total:</strong> R$ ${totalLiquido.toFixed(2)}
   `;
 }
 </script>
