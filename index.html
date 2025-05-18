@@ -42,19 +42,20 @@
   <div id="calc-lucro" class="section active">
     <div class="container">
       <h2>Calculadora de Taxas e Lucro Shopee</h2>
-      <p>Em breve conteúdo será implementado aqui.</p>
-    </div>
-  </div>
-  <div id="calc-receb" class="section">
-    <div class="container">
-      <h2>Calculadora de Taxas Mensais</h2>
-      <label for="freteGratisMensal">Participa do Programa de Frete Grátis?</label>
-      <select id="freteGratisMensal">
-        <option value="sim" selected>Sim</option>
+      <label for="valorVenda">Valor de Venda</label>
+      <input type="number" id="valorVenda" step="0.01">
+
+      <label for="freteGratis">Participa do Programa de Frete Grátis?</label>
+      <select id="freteGratis">
+        <option value="sim">Sim</option>
         <option value="nao">Não</option>
       </select>
-      <label for="impostoMensal">Imposto</label>
-      <select id="impostoMensal">
+
+      <label for="custoProduto">Custo do Produto</label>
+      <input type="number" id="custoProduto" step="0.01">
+
+      <label for="imposto">Imposto</label>
+      <select id="imposto">
         <option value="0">0% (MEI ou PF)</option>
         <option value="1">1%</option>
         <option value="2">2%</option>
@@ -67,21 +68,9 @@
         <option value="9">9%</option>
         <option value="10">10%</option>
       </select>
-      <div id="linhas-produtos">
-        <div class="linha-produto">
-          <input type="text" placeholder="Nome do seu Produto">
-          <input type="number" placeholder="Qtd" min="1">
-          <input type="number" placeholder="Preço de Venda R$" step="0.01">
-        </div>
-      </div>
-      <button onclick="adicionarLinha()">+ Adicionar Linha</button>
-      <button onclick="calcularMensal()" style="margin-top:10px">Calcular Total</button>
-      <div class="resultado-mensal" id="resultadoMensal"></div>
-      <div class="explicacao-mensal">
-        Essa calculadora serve para calcular o valor que você deve receber líquido da Shopee. Você pode comparar esse valor com seu extrato bancário.<br><br>
-        Lembre-se: caso tenha feito promoções, utilizado o Shopee Antecipado ou outros descontos, o valor poderá não coincidir.<br><br>
-        Essa ferramenta é útil como estimativa, mas o ideal é manter um controle mensal detalhado de todas as vendas e fluxo de caixa.
-      </div>
+
+      <button onclick="calcularLucro()">Calcular</button>
+      <div class="resultado" id="resultadoLucro"></div>
     </div>
   </div>
   <div class="banner-final">
@@ -94,45 +83,40 @@
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
-    function adicionarLinha() {
-      const container = document.getElementById("linhas-produtos");
-      const linha = document.createElement("div");
-      linha.className = "linha-produto";
-      linha.innerHTML = `
-        <input type="text" placeholder="Nome do seu Produto">
-        <input type="number" placeholder="Qtd" min="1">
-        <input type="number" placeholder="Preço de Venda R$" step="0.01">
-      `;
-      container.appendChild(linha);
-    }
-    function calcularMensal() {
-      const linhas = document.querySelectorAll("#linhas-produtos .linha-produto");
-      const freteGratis = document.getElementById("freteGratisMensal").value;
-      const impostoPercentual = parseFloat(document.getElementById("impostoMensal").value) || 0;
-      const taxaPercentual = freteGratis === "sim" ? 0.20 : 0.14;
-      let totalVenda = 0, totalComissao = 0, totalImposto = 0, totalLiquido = 0;
-      linhas.forEach(linha => {
-        const inputs = linha.querySelectorAll("input");
-        const qtd = parseFloat(inputs[1].value);
-        const preco = parseFloat(inputs[2].value);
-        if (!isNaN(qtd) && !isNaN(preco)) {
-          const subtotal = qtd * preco;
-          totalVenda += subtotal;
-          let comissao = preco * taxaPercentual;
-          if (comissao > 100) comissao = 100;
-          let taxaExtra = preco >= 8 ? 4 : preco * 0.5;
-          const totalPorItem = qtd * (comissao + taxaExtra);
-          totalComissao += totalPorItem;
-          const imposto = subtotal * (impostoPercentual / 100);
-          totalImposto += imposto;
-          totalLiquido += subtotal - totalPorItem - imposto;
-        }
-      });
-      document.getElementById("resultadoMensal").innerHTML = `
-        <strong>Total em Vendas:</strong> R$ ${totalVenda.toFixed(2)}<br>
-        <strong>Total de Comissões + Taxas:</strong> R$ ${totalComissao.toFixed(2)}<br>
-        <strong>Total de Impostos:</strong> R$ ${totalImposto.toFixed(2)}<br>
-        <strong>Valor Líquido Total:</strong> R$ ${totalLiquido.toFixed(2)}
+    function calcularLucro() {
+      const valorVenda = parseFloat(document.getElementById('valorVenda').value);
+      const freteGratis = document.getElementById('freteGratis').value;
+      const custoProduto = parseFloat(document.getElementById('custoProduto').value);
+      const impostoPercentual = parseFloat(document.getElementById('imposto').value) || 0;
+      if (!valorVenda || !custoProduto || valorVenda <= 0 || custoProduto < 0) {
+        document.getElementById('resultadoLucro').innerHTML = 'Preencha todos os campos corretamente.';
+        return;
+      }
+      const taxaShopeePercentual = freteGratis === 'sim' ? 0.20 : 0.14;
+      let comissaoPercentual = valorVenda * taxaShopeePercentual;
+      if (comissaoPercentual > 100) comissaoPercentual = 100;
+      const taxaExtra = valorVenda >= 8 ? 4 : valorVenda * 0.5;
+      const imposto = valorVenda * (impostoPercentual / 100);
+      const totalComissao = comissaoPercentual + taxaExtra;
+      const valorLiquido = valorVenda - totalComissao - imposto;
+      const lucro = valorLiquido - custoProduto;
+      const margemLucroCusto = custoProduto > 0 ? ((lucro / custoProduto) * 100).toFixed(2) : '0.00';
+      const margemLucroVenda = ((lucro / valorVenda) * 100).toFixed(2);
+      let classificacao = '';
+      const margem = parseFloat(margemLucroVenda);
+      if (margem >= 30) classificacao = 'Excelente, Margem de Lucro adequada';
+      else if (margem >= 20) classificacao = 'Boa, Margem de Lucro aceitável';
+      else if (margem >= 12) classificacao = 'Média, margem abaixo do normal, exige bom controle';
+      else if (margem >= 7) classificacao = 'Margem Ruim, só válido com alto volume';
+      else classificacao = 'Margem Extremamente Ruim, Máximo de atenção';
+      document.getElementById('resultadoLucro').innerHTML = `
+        <strong>Comissão Shopee:</strong> R$ ${totalComissao.toFixed(2)}<br>
+        <strong>Imposto:</strong> R$ ${imposto.toFixed(2)}<br>
+        <strong>Valor Líquido:</strong> R$ ${valorLiquido.toFixed(2)}<br>
+        <strong>Lucro:</strong> R$ ${lucro.toFixed(2)}<br>
+        <strong>Margem Lucro sobre Custo:</strong> ${margemLucroCusto}%<br>
+        <strong>Margem Lucro sobre Venda:</strong> ${margemLucroVenda}%<br>
+        <em>${classificacao}</em>
       `;
     }
   </script>
