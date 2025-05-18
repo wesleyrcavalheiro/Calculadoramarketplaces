@@ -10,24 +10,15 @@
       margin: 20px;
       background: #f9f9f9;
     }
-    .menu {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
+    .dropdown-menu {
+      text-align: center;
       margin-bottom: 30px;
     }
-    .menu-button {
-      padding: 10px 20px;
-      background: #f60;
-      color: white;
-      border: none;
+    .dropdown-menu select {
+      padding: 10px;
+      font-size: 16px;
       border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .menu-button:hover {
-      background: #d95300;
+      border: 1px solid #ccc;
     }
     .section {
       display: none;
@@ -124,10 +115,13 @@
   </a>
 </div>
 
-<div class="menu">
-  <button class="menu-button" onclick="abrirMenu('calc-lucro')">Calculadora de Taxas e Lucro Shopee</button>
-  <button class="menu-button" onclick="abrirMenu('calc-receb')">Calculadora de Recebimentos Shopee</button>
-  <button class="menu-button" onclick="abrirMenu('controle-caixa')">Como Fazer Controle de Caixa</button>
+<div class="dropdown-menu">
+  <label for="menu">MENU</label>
+  <select id="menu" onchange="abrirMenu(this.value)">
+    <option value="calc-lucro">Calculadora de Taxas e Lucro Shopee</option>
+    <option value="calc-receb">Calculadora de Recebimentos Shopee</option>
+    <option value="controle-caixa">Como Fazer Controle de Caixa</option>
+  </select>
 </div>
 
 <div id="calc-lucro" class="section active">
