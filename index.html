@@ -150,8 +150,14 @@
 <div id="calc-receb" class="section">
   <div class="container">
     <h2>Calculadora de Taxas Mensais</h2>
-    <div id="linhas-produtos"></div>
-    <button onclick="adicionarLinha()">Adicionar Produto</button>
+    <div id="linhas-produtos">
+      <div class="linha-produto">
+        <input type="text" placeholder="Produto">
+        <input type="number" placeholder="Qtd" min="1">
+        <input type="number" placeholder="Preço R$" step="0.01">
+      </div>
+    </div>
+    <button onclick="adicionarLinha()">+ Adicionar Linha</button>
     <button onclick="calcularMensal()" style="margin-top:10px">Calcular Total</button>
     <div class="resultado-mensal" id="resultadoMensal"></div>
   </div>
