@@ -5,6 +5,140 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculadora Shopee</title>
   <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+    .dropdown-menu { text-align: center; margin-bottom: 30px; }
+    .dropdown-menu label { background: #f60; color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; margin-bottom: 10px; }
+    .dropdown-menu select { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; }
+    label, select, input, textarea { display: block; width: 100%; margin-bottom: 15px; }
+    input, textarea { padding: 10px; font-size: 14px; border-radius: 5px; border: 1px solid #ccc; }
+    button { width: 100%; padding: 10px; font-size: 16px; background: #f60; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .resultado, .resultado-mensal { margin-top: 20px; padding: 10px; background: #eef; border-radius: 5px; }
+    .explicacao-mensal { margin-top: 15px; font-size: 14px; color: #444; background: #fffbe6; padding: 10px; border-radius: 5px; }
+    .linha-produto { display: flex; gap: 10px; margin-bottom: 10px; }
+    .linha-produto input { flex: 1; }
+    .banner-superior, .banner-final { text-align: center; margin: 20px auto; }
+    .banner-superior img, .banner-final img { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <div class="banner-superior">
+    <a href="https://s.shopee.com.br/6VBOUlWVrA" target="_blank">
+      <img src="https://i.postimg.cc/VvLvV0rn/image-1.png" alt="Oferta Shopee">
+    </a>
+  </div>
+  <div class="dropdown-menu">
+    <label for="menu">MENU</label><br>
+    <select id="menu" onchange="abrirMenu(this.value)">
+      <option value="calc-lucro">Calculadora de Taxas e Lucro Shopee</option>
+      <option value="calc-receb">Calculadora de Taxas Mensais</option>
+      <option value="controle-caixa">Como Fazer Controle de Caixa</option>
+      <option value="sugestoes">Deixe Sugestões de Melhorias</option>
+    </select>
+  </div>
+  <div id="calc-receb" class="section active">
+    <div class="container">
+      <h2>Calculadora de Taxas Mensais</h2>
+      <label for="freteGratisMensal">Participa do Programa de Frete Grátis?</label>
+      <select id="freteGratisMensal">
+        <option value="sim">Sim</option>
+        <option value="nao" selected>Não</option>
+      </select>
+      <label for="impostoMensal">Imposto</label>
+      <select id="impostoMensal">
+        <option value="0">0% (MEI ou PF)</option>
+        <option value="1">1%</option>
+        <option value="2">2%</option>
+        <option value="3">3%</option>
+        <option value="4">4%</option>
+        <option value="5">5%</option>
+        <option value="6">6%</option>
+        <option value="7">7%</option>
+        <option value="8">8%</option>
+        <option value="9">9%</option>
+        <option value="10">10%</option>
+      </select>
+      <div id="linhas-produtos">
+        <div class="linha-produto">
+          <input type="text" placeholder="Nome do seu Produto">
+          <input type="number" placeholder="Qtd" min="1">
+          <input type="number" placeholder="Preço de Venda R$" step="0.01">
+        </div>
+      </div>
+      <button onclick="adicionarLinha()">+ Adicionar Linha</button>
+      <button onclick="calcularMensal()" style="margin-top:10px">Calcular Total</button>
+      <div class="resultado-mensal" id="resultadoMensal"></div>
+      <div class="explicacao-mensal">
+        Essa calculadora serve para calcular o valor que você deve receber líquido da Shopee. Você pode comparar esse valor com seu extrato bancário.<br><br>
+        Lembre-se: caso tenha feito promoções, utilizado o Shopee Antecipado ou outros descontos, o valor poderá não coincidir.<br><br>
+        Essa ferramenta é útil como estimativa, mas o ideal é manter um controle mensal detalhado de todas as vendas e fluxo de caixa.
+      </div>
+    </div>
+  </div>
+  <div class="banner-final">
+    <a href="https://ton.com.br/catalogo/?referrer=B63550BB-B6BB-49D1-B80E-11593767BA51&userAnticipation=0&utm_medium=invite_share&utm_source=revendedor" target="_blank">
+      <img src="https://i.postimg.cc/8C6JBw1J/Chat-GPT-Image-17-de-mai-de-2025-21-27-01.png" alt="Maquininhas Ton">
+    </a>
+  </div>
+  <script>
+    function abrirMenu(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+    function adicionarLinha() {
+      const container = document.getElementById("linhas-produtos");
+      const linha = document.createElement("div");
+      linha.className = "linha-produto";
+      linha.innerHTML = `
+        <input type="text" placeholder="Nome do seu Produto">
+        <input type="number" placeholder="Qtd" min="1">
+        <input type="number" placeholder="Preço de Venda R$" step="0.01">
+      `;
+      container.appendChild(linha);
+    }
+    function calcularMensal() {
+      const linhas = document.querySelectorAll("#linhas-produtos .linha-produto");
+      const freteGratis = document.getElementById("freteGratisMensal").value;
+      const impostoPercentual = parseFloat(document.getElementById("impostoMensal").value) || 0;
+      const taxaPercentual = freteGratis === "sim" ? 0.20 : 0.14;
+      let totalVenda = 0, totalComissao = 0, totalImposto = 0, totalLiquido = 0;
+      linhas.forEach(linha => {
+        const inputs = linha.querySelectorAll("input");
+        const qtd = parseFloat(inputs[1].value);
+        const preco = parseFloat(inputs[2].value);
+        if (!isNaN(qtd) && !isNaN(preco)) {
+          const subtotal = qtd * preco;
+          totalVenda += subtotal;
+          let comissao = preco * taxaPercentual;
+          if (comissao > 100) comissao = 100;
+          let taxaExtra = preco >= 8 ? 4 : preco * 0.5;
+          const totalPorItem = qtd * (comissao + taxaExtra);
+          totalComissao += totalPorItem;
+          const imposto = subtotal * (impostoPercentual / 100);
+          totalImposto += imposto;
+          totalLiquido += subtotal - totalPorItem - imposto;
+        }
+      });
+      document.getElementById("resultadoMensal").innerHTML = `
+        <strong>Total em Vendas:</strong> R$ ${totalVenda.toFixed(2)}<br>
+        <strong>Total de Comissões + Taxas:</strong> R$ ${totalComissao.toFixed(2)}<br>
+        <strong>Total de Impostos:</strong> R$ ${totalImposto.toFixed(2)}<br>
+        <strong>Valor Líquido Total:</strong> R$ ${totalLiquido.toFixed(2)}
+      `;
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Shopee</title>
+  <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
