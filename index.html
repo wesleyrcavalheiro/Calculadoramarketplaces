@@ -10,28 +10,29 @@
       margin: 20px;
       background: #f9f9f9;
     }
-    .tabs {
+    .menu {
       display: flex;
       justify-content: center;
-      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
     }
-    .tab-button {
+    .menu-button {
       padding: 10px 20px;
-      cursor: pointer;
-      border: none;
-      font-weight: bold;
-      border-radius: 5px 5px 0 0;
-      background: #eee;
-      margin: 0 5px;
-    }
-    .tab-button.active {
       background: #f60;
       color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
     }
-    .tab-content {
+    .menu-button:hover {
+      background: #d95300;
+    }
+    .section {
       display: none;
     }
-    .tab-content.active {
+    .section.active {
       display: block;
     }
     .container {
@@ -123,12 +124,13 @@
   </a>
 </div>
 
-<div class="tabs">
-  <button class="tab-button active" onclick="abrirAba('aba-shopee')">Shopee</button>
-  <button class="tab-button" onclick="abrirAba('aba-outras')">Outras Ferramentas</button>
+<div class="menu">
+  <button class="menu-button" onclick="abrirMenu('calc-lucro')">Calculadora de Taxas e Lucro Shopee</button>
+  <button class="menu-button" onclick="abrirMenu('calc-receb')">Calculadora de Recebimentos Shopee</button>
+  <button class="menu-button" onclick="abrirMenu('controle-caixa')">Como Fazer Controle de Caixa</button>
 </div>
 
-<div id="aba-shopee" class="tab-content active">
+<div id="calc-lucro" class="section active">
   <div class="container">
     <h2>Calculadora Shopee</h2>
     <label for="valorVenda">Valor de Venda <span title="É o preço final que você vai vender na Shopee.">ⓘ</span></label>
@@ -171,9 +173,16 @@
   </div>
 </div>
 
-<div id="aba-outras" class="tab-content">
+<div id="calc-receb" class="section">
   <div class="container">
-    <h2>Outras Ferramentas</h2>
+    <h2>Calculadora de Recebimentos Shopee</h2>
+    <p>Em breve...</p>
+  </div>
+</div>
+
+<div id="controle-caixa" class="section">
+  <div class="container">
+    <h2>Como Fazer Controle de Caixa</h2>
     <p>Em breve...</p>
   </div>
 </div>
@@ -222,13 +231,10 @@ function calcular() {
   `;
 }
 
-function abrirAba(id) {
-  const tabs = document.querySelectorAll('.tab-content');
-  tabs.forEach(tab => tab.classList.remove('active'));
+function abrirMenu(id) {
+  const seções = document.querySelectorAll('.section');
+  seções.forEach(sec => sec.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const buttons = document.querySelectorAll('.tab-button');
-  buttons.forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
 }
 </script>
 </body>
